@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.douban.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+numpy = "==1.19.3"
+pandas = "*"
+fastapi = "*"
+aiofiles = "*"
+opencv-contrib-python = "*"
+jupyter = "*"
+ipython = "*"
+uvicorn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

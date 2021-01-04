@@ -1,7 +1,8 @@
-from const import API_URL, API_KEY
-from requests import get, Response
+from const import USERNAMES_DICT, API_KEY, API_URL, PATH_USERNAME
+import requests
 import pandas as pd
 from typing import List, Optional
+import json
 
 
 class Score(object):
@@ -66,13 +67,14 @@ class Game(object):
 class Match(object):
 
     mid: str
-    res: Response
+    res: requests.Response
     games: List[Game]
     match_df: pd.DataFrame
 
     def __init__(self, match_url: str, count_warmup: int = 2):
         self.mid = ''.join(list(filter(str.isdigit, match_url)))
-        self.res = get(API_URL + f"/get_match?k={API_KEY}&mp={self.mid}")
+        print(f"downloading match {self.mid}'s progress")
+        self.res = requests.get(API_URL + f"/get_match?k={API_KEY}&mp={self.mid}")
         self.games = []
         self.match_df = pd.DataFrame()
 
@@ -129,7 +131,7 @@ def analyze_scores(scores_list: dict, rm_zeros: bool = True) -> List[Score]:
     return sorted(res_list, reverse=True)
 
 
-def is_valid(res: Response) -> bool:
+def is_valid(res: requests.Response) -> bool:
     return res.status_code == 200 and res.json()['match']
 
 
@@ -145,5 +147,15 @@ def analyze_match(games: List[Game]) -> pd.DataFrame:
 
 
 def get_username(uid: str) -> str:
-    res = get(API_URL + f"/get_user?k={API_KEY}&u={uid}")
-    return res.json()[0]['username']
+
+    if uid in USERNAMES_DICT.keys():
+        username = USERNAMES_DICT[uid]
+    else:
+        print(f'getting {uid} username')
+        res = requests.get(API_URL + f"/get_user?k={API_KEY}&u={uid}")
+        username = res.json()[0]['username']
+        USERNAMES_DICT[uid] = username
+        with open(PATH_USERNAME, "w") as dump_f:
+            json.dump(USERNAMES_DICT, dump_f)
+
+    return username

@@ -8,6 +8,7 @@ import matchanalysis
 
 def ava_dl(uid: str):
 
+    print(f"downloading ava_{uid}.jpg")
     res = requests.get(f'http://a.ppy.sh/{uid}').content
     with open(f'data/avatar_{uid}.jpg', 'wb') as f:
         f.write(res)
@@ -60,7 +61,8 @@ def gen_text_img(text: str, size: int = 128, font_scale: float = 2, thickness: i
 
 def test():
 
-    match = matchanalysis.Match("67178685", count_warmup=2)
+    match = matchanalysis.Match('67178685', count_warmup=2)
+    print(match)
     img_out = gen_img(match.scored_match_df([10, 6, 3, 1]), size=128)
     cv2.imwrite('result.jpg', img_out)
     cv2.imshow('res', img_out)
